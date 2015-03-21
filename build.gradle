@@ -1,0 +1,49 @@
+apply plugin: 'groovy'
+apply plugin: 'java'
+
+repositories {
+    mavenCentral()
+}
+
+task installDocker(type: Exec) {
+    executable 'sudo'
+    args 'sh', 'scripts/installDocker.sh'
+    doLast {
+        println "Installing docker"
+    }
+}
+
+subprojects {
+    task buildImages(type: Exec, dependsOn: installDocker) {
+        executable 'sudo'
+        args 'sh', '../scripts/buildImage.sh', project.parent.name+'/'+project.name
+        doLast {
+            println "Building image for "+project.name
+        }
+    }
+}
+
+task stopContainers(type: Exec, dependsOn: installDocker) {
+    executable 'sudo'
+    args 'sh', 'scripts/stopContainers.sh'
+    doLast {
+        println "Removing all images"
+    }
+}
+
+task cleanImages(type: Exec, dependsOn: [installDocker,stopContainers]) {
+    executable 'sudo'
+    args 'sh', 'scripts/cleanContainers.sh'
+    doLast{
+        println "Removing all images"
+    }
+}
+subprojects {
+    task startDev(type: Exec, dependsOn: stopContainers) {
+        executable 'sudo'
+        args 'sh', '../scripts/dev-run-'+project.name+'.sh', ''+file('.')
+        doLast {
+            println "Starting all images in dev mode"
+        }
+    }
+}

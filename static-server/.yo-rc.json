@@ -1,0 +1,11 @@
+{
+  "generator-angular-famous-ionic": {
+    "appname": "staticServer2",
+    "clientFolder": "client",
+    "ionic": false,
+    "famous": true,
+    "ngCordova": true,
+    "fontawesome": true,
+    "bootstrap": true
+  }
+}
